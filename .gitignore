@@ -1,3 +1,13 @@
+###########
+# Usr cfg #
+###########
+
+data/
+
+###################
+# Python defaults #
+###################
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
