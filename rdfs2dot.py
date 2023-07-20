@@ -12,25 +12,41 @@ args=argparse.ArgumentParser(description="given the URL of an RDF file, extract 
 args.add_argument("src", type=str, help="URL of the source file")
 args=args.parse_args()
 
-g = Graph().parse(args.src)
-
 ##########
 # CONFIG #
 ##########
+
+# where to find SPARQL updates
+RDFS_UPD="sparql/rdfs-inference.sparql"
 
 # where to find SPARQL queries
 CLASS_Q="sparql/classes.sparql"
 INST_Q="sparql/instances.sparql"
 
 #######################
-# load SPARQL queries #
+# load SPARQL scripts #
 #######################
+
+with open(RDFS_UPD,"rt") as input:
+	RDFS_UPD=input.read()
 
 with open(CLASS_Q,"rt") as input:
 	CLASS_Q=input.read()
 
 with open(INST_Q,"rt") as input:
 	INST_Q=input.read()
+
+########
+# init #
+########
+
+g = Graph().parse(args.src)
+g_len=0
+while(g_len<len(g)):
+	g_len=len(g)
+	g.update(RDFS_UPD)
+	sys.stderr.write(f"prep: inferred {len(g)-g_len} triples\n")
+	sys.stderr.flush()
 
 ##############
 # extraction #

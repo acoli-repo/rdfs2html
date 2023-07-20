@@ -1,0 +1,43 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+PREFIX vann: <http://purl.org/vocab/vann/> 
+PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+PREFIX : <http://www.lexinfo.net/ontology/3.0/lexinfo#> 
+PREFIX terms: <http://purl.org/dc/terms/> 
+PREFIX cc: <http://creativecommons.org/ns#> 
+
+# add RDFS axioms and evaluate RDFS rules
+# we focus on TBox inferences (class inferences from properties and triples)
+# to get these inferences, iterate until the graph doesn't change anymore
+
+# insert RDFS axioms to infer properties
+# (skip axioms on containers, statements, resources, literals and classes)
+
+INSERT DATA {
+    rdfs:domain rdfs:domain rdf:Property .
+    rdfs:range rdfs:domain rdf:Property .
+    rdfs:subPropertyOf rdfs:domain rdf:Property .
+    rdfs:subPropertyOf rdfs:range rdf:Property .
+};
+
+# apply selected RDFS inference rules (https://www.w3.org/TR/rdf-mt/#rules)
+
+# skipped:
+# - blank node rules (se1, se2, lg, gl, rdf2, rdfs1)
+# - rdfs:Resource inferences (rdfs4,rdfs8)
+# - transitive and reflexives closures of rdfs:subPropertyOf, rdfs:subClassOf (rdfs5,rdfs6,rdfs7,rdfs9,rdfs10)
+# - container data structures
+
+# rdf1
+INSERT { ?prop a rdf:Property. } 
+WHERE { [] ?prop [] };
+
+# rdfs2
+INSERT { ?a a ?class }
+WHERE { ?prop rdfs:domain ?class . ?a ?prop [] };
+
+# rdfs3
+INSERT { ?a a ?class }
+WHERE { ?prop rdfs:range ?class . [] ?prop ?a };
+
+
