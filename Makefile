@@ -6,10 +6,10 @@ pdf: data
 		tgt=pdf/`basename $$file`.pdf;\
 		scaled=pdf/`basename $$file`.poster.pdf;\
 		if [ ! -e $$tgt ]; then \
-			python3 rdfs2dot.py $$file;\
+			python3 rdfs2dot.py -r $$file;\
 			mv Digraph.gv.pdf $$tgt;\
 			if [ ! -e $$scaled ]; then \
-				pdfposter $$tgt -s 0.25  $$scaled;\
+				pdfposter $$tgt -s 0.1625  $$scaled;\
 			fi;\
 		fi;\
 	done;\

@@ -1,0 +1,40 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+PREFIX vann: <http://purl.org/vocab/vann/> 
+PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+PREFIX : <http://www.lexinfo.net/ontology/3.0/lexinfo#> 
+PREFIX terms: <http://purl.org/dc/terms/> 
+PREFIX cc: <http://creativecommons.org/ns#> 
+
+# note that we are a bit imprecise regarding domain and range
+# we annotate ranges and domains even if specified for subproperties, only
+# so, the diagram may be stricter than the actual schema
+
+SELECT DISTINCT ?dom ?prop ?ran
+WHERE {
+        {   
+            ?prop rdfs:range ?ran . 
+            OPTIONAL { ?prop ((^rdfs:subPropertyOf)*|rdfs:subPropertyOf*)/rdfs:domain ?dom . }        
+            FILTER(BOUND(?ran))
+        } 
+        UNION 
+        {   ?prop rdfs:domain ?dom . 
+            OPTIONAL { ?prop ((^rdfs:subPropertyOf)*|rdfs:subPropertyOf*)/rdfs:range ?range . }
+        } 
+        UNION {
+            ?prop a rdf:Property .
+            OPTIONAL { ?prop ((^rdfs:subPropertyOf)*|rdfs:subPropertyOf*)/rdfs:domain ?dom . }
+            OPTIONAL { ?prop ((^rdfs:subPropertyOf)*|rdfs:subPropertyOf*)/rdfs:range ?range . }
+         }
+        MINUS {
+            VALUES (?prop) {
+                (rdfs:range)
+                (rdfs:domain)
+                (rdfs:subPropertyOf)
+                (rdfs:subClassOf)
+                (rdf:type)
+            }
+        }
+
+} ORDER BY ?prop ?dom ?ran
+    
